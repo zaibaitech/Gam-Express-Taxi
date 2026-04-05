@@ -25,6 +25,7 @@ interface AdminDataContextType {
   updateRideStatus: (bookingId: string, status: RideStatus) => void;
   updatePaymentStatus: (bookingId: string, status: PaymentStatus) => void;
   markActivitySeen: () => void;
+  addDriver: (driver: Omit<Driver, "id" | "tripsToday" | "reportedEarnings" | "availabilityStatus">) => void;
 }
 
 const AdminDataContext = createContext<AdminDataContextType | undefined>(undefined);
@@ -206,6 +207,28 @@ export default function AdminDataProvider({ children }: { children: React.ReactN
     setActivity((prev) => prev.map((item) => ({ ...item, isNew: false })));
   };
 
+  const addDriver = (driverData: Omit<Driver, "id" | "tripsToday" | "reportedEarnings" | "availabilityStatus">) => {
+    const newDriver: Driver = {
+      ...driverData,
+      id: `DRV-${Date.now()}`,
+      availabilityStatus: "available",
+      tripsToday: 0,
+      reportedEarnings: 0,
+    };
+    setDrivers((prev) => [...prev, newDriver]);
+    setActivity((prev) => [
+      {
+        id: `ACT-${Date.now()}`,
+        type: "driver-assigned",
+        title: "New driver added",
+        message: `${newDriver.name} (${newDriver.vehiclePlate}) joined the fleet`,
+        createdAt: new Date().toISOString(),
+        isNew: true,
+      },
+      ...prev,
+    ]);
+  };
+
   const value = useMemo(
     () => ({
       bookings,
@@ -216,6 +239,7 @@ export default function AdminDataProvider({ children }: { children: React.ReactN
       updateRideStatus,
       updatePaymentStatus,
       markActivitySeen,
+      addDriver,
     }),
     [bookings, drivers, payments, activity],
   );
