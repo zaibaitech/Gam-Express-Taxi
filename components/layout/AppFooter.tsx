@@ -34,6 +34,8 @@ export default function AppFooter() {
 
         <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-500">
           <p>&copy; {new Date().getFullYear()} Gam Express Taxi. All rights reserved.</p>
+          {/* TODO: Remove before production */}
+          <a href="/admin" className="mt-2 inline-block text-xs text-gray-600 hover:text-gray-400 underline">Admin Panel</a>
         </div>
       </div>
     </footer>
